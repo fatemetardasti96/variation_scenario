@@ -1,0 +1,27 @@
+from dataclasses import dataclass
+
+@dataclass    
+class InputEnergy:
+    SOLAR = 'solar radiation'
+    LIGNITE = 'lignite'
+    HARDCOAL = 'hard coal'
+    NATURALGAS = 'natural gas'
+    BIOGAS = 'biogas'
+    BIOMASS = 'biomass'
+    HEAVYOIL = 'heavy oil'
+    UNKNOWN = 'unknown'
+    LIGHTOIL = 'light oil'
+    URANIUM = 'uranium'
+    ELECTRICITY = 'electricity'
+    AIR = 'air'
+    WASTE = 'waste'
+    WATER = 'water'
+    HEAT = 'heat'
+    ELECTRIC_ENERGY = 'electric_energy'
+    H2 = 'H2'
+    H2_FC = 'H2_FC'
+    WIND_ONS = 'WIND_ONS'
+    WIND_OFF = 'WIND_OFF'
+    TRADE_IMPORT = 'TRADE_IMPORT'
+    BATTERY_ENERGY = 'Battery_Energy'
+    HYDRO_ENERGY = 'hydro_energy'

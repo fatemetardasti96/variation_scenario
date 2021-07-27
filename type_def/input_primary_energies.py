@@ -1,0 +1,20 @@
+from enum import Enum
+
+class InputPrimaryEnergy(Enum):
+    SOLAR = 'solar radiation'
+    LIGNITE = 'lignite'
+    HARDCOAL = 'hard coal'
+    NATURALGAS = 'natural gas'
+    BIOGAS = 'biogas'
+    BIOMASS = 'biomass'
+    HEAVYOIL = 'heavy oil'
+    LIGHTOIL = 'light oil'
+    URANIUM = 'uranium'
+    WIND = 'wind'
+    WASTE = 'waste'
+    WATER = 'water'
+    HEAT = 'heat'
+    CO2 = 'CO2'
+    WIND_OFF = 'WIND_OFF'
+    WIND_ONS = 'WIND_ONS'
+    TRADE_IMPORT = 'TRADE_IMPORT'
