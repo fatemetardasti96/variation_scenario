@@ -91,7 +91,7 @@ def create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited
 
 def region_converter_block(converter_code, installed_capacity_dict, region_csv):
     region_csv.append(["#converter", "#code", converter_code])
-    converter_type = "DVP_linear"
+    converter_type = "DVP_const"
     installation_row = ["installation", "#type", converter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
@@ -100,7 +100,7 @@ def region_converter_block(converter_code, installed_capacity_dict, region_csv):
 
 def region_multiconverter_block(code, installed_capacity_dict, region_csv):
     region_csv.append(["#multi-converter", "#code", code])
-    multiconverter_type = "DVP_linear"
+    multiconverter_type = "DVP_const"
     installation_row = ["installation", "#type", multiconverter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
@@ -109,7 +109,7 @@ def region_multiconverter_block(code, installed_capacity_dict, region_csv):
 
 def region_storage_block(code, installed_capacity_dict, region_csv):
     region_csv.append(["#storage", "#code", code])
-    storage_type = "DVP_linear"
+    storage_type = "DVP_const"
     installation_row = ["installation", "#type", storage_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
