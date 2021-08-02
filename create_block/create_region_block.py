@@ -95,6 +95,7 @@ def region_converter_block(converter_code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", converter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
+    installation_row.extend(["{}-12-31_00:00".format(year), value])
     region_csv.append(installation_row)
 
 
@@ -104,6 +105,7 @@ def region_multiconverter_block(code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", multiconverter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
+    installation_row.extend(["{}-12-31_00:00".format(year), value])
     region_csv.append(installation_row)
 
 
@@ -113,6 +115,7 @@ def region_storage_block(code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", storage_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
+    installation_row.extend(["{}-12-31_00:00".format(year), value])
     region_csv.append(installation_row)
 
 
@@ -122,16 +125,19 @@ def apply_diff(installed_capacity_dict, lifetime):
     starting_year = available_capacity_years[0]
     ending_year = available_capacity_years[-1]
     end_of_lifetime = starting_year + lifetime
-    capacity_dict_all_years = {key:0 for key in range(starting_year, ending_year)}
-    # 2020,2030,2040,2050 -> 4
-    capacity_dict_all_years[starting_year] = installed_capacity_dict[starting_year]
-    for i in range(len(available_capacity_years)-1):
+    capacity_dict_all_years = {key:0 for key in range(starting_year-int(lifetime), ending_year-int(lifetime))}
+    # 2016, 2020,2030,2040,2050 
+    # capacity_dict_all_years[starting_year] = installed_capacity_dict[starting_year]
+    for i in range(len(available_capacity_years)-2):
         start = available_capacity_years[i]
         end   = available_capacity_years[i+1]
-        for year in range(start+1, end+1):
-            capacity_dict_all_years[year] = ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))*(year-start)            
-            if year == end_of_lifetime:
-                capacity_dict_all_years[year] = installed_capacity_dict[end]
+        for year in range(start, end):
+            capacity_dict_all_years[year-lifetime] = ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))
+    try:
+        for year in range(available_capacity_years[-2], ending_year+1):        
+            capacity_dict_all_years[year-int(lifetime)] = installed_capacity_dict[ending_year]/11
+    except:
+        capacity_dict_all_years = installed_capacity_dict 
 
     return capacity_dict_all_years
 
@@ -158,7 +164,7 @@ def create_installation_dict(regions_data, installation_elements, region, avoid_
                 lifetime = iterate_mapping(regions_data, "unique(scalars[? parameter_name == 'lifetime' && technology=='{}' &&\
                 technology_type=='{}' && input_energy_vector=='{}'].value)".format(tech, tech_type, input_energy))[0]
             except:
-                lifetime = 1000
+                lifetime = 0
             installation_diff = apply_diff(installed_capacity_dict, lifetime)
             installation_list.append({'input_energy': input_energy, 'tech_type': tech_type, 'tech': tech, 'value': installation_diff})    
         else:

@@ -39,7 +39,7 @@ def create_converter(regions_data, cwd):
             output_energy = [OutputEnergy.ELECTRIC_ENERGY if i == OutputEnergy.ELECTRICITY else i for i in output_energy]
             
             efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'efficiency', 2016, 1)
-            lifetime_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'lifetime', 2016, 0)
+            lifetime_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'lifetime', 2016, 50)
             capital_cost_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'capital costs', 2016, 0)
             fixed_cost_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'fixed costs', 2016, 0)
                             

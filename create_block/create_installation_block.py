@@ -60,21 +60,41 @@ def add_one_year_in_between(expansion_limit):
     return expansion_limit_with_additional_years
 
 
+def is_list_elem_same(expansion_value):
+    for word in expansion_value:
+        if expansion_value[0] != word:
+            return False
+    return True
+
+
+def select_expansion_procedure(expansion_limit):
+    expansion_value = [e['value'] for e in expansion_limit]
+    if is_list_elem_same(expansion_value):
+        return {2016: expansion_limit[0]['value']/36, 2050: expansion_limit[-1]['value']/36}
+    else:
+        #Procedure when values change over the years
+        return {2016: expansion_limit[0]['value']/4, 2019: expansion_limit[0]['value'], 2020: (expansion_limit[1]['value']-expansion_limit[0]['value'])/10,
+            2029: (expansion_limit[1]['value']-expansion_limit[0]['value'])/10, 2030: (expansion_limit[2]['value']-expansion_limit[1]['value'])/10,
+            2039: (expansion_limit[2]['value']-expansion_limit[1]['value'])/10, 2040: (expansion_limit[3]['value']-expansion_limit[2]['value'])/10,
+            2050: (expansion_limit[3]['value']-expansion_limit[2]['value'])/10}
+
+
 def create_installation_list_block(name, installed_capacity, e2p_ratio, expansion_limit, installation_csv):
     # transformed_expansion = transform_expansion_limit(expansion_limit)
     capacity = compute_capacity_from_e2p(installed_capacity, e2p_ratio)
-    capacity_difference, expansion_difference = apply_difference(capacity, expansion_limit)
-    expansion_limit_with_additional_years = add_one_year_in_between(expansion_difference)
+    transformed_expansion = select_expansion_procedure(expansion_limit)
+    # capacity_difference, expansion_difference = apply_difference(capacity, expansion_limit)
+    # expansion_limit_with_additional_years = add_one_year_in_between(expansion_difference)
 
     var_row = [name, "#type", "DVP_linear", "#data"]
-    for i, year in enumerate(list(expansion_limit_with_additional_years.keys())):
-        start_date = "{}-01-01_00:00".format(year)
+    for i in range(len(transformed_expansion)-1):
+        start_date = "{}-01-01_00:00".format(list(transformed_expansion.keys())[i])
         var_row.extend([start_date, "var{}".format(i)])    
-    var_row.extend(["{}-12-31_00:00".format(year),0,''])
+    var_row.extend(["{}-12-31_00:00".format(list(transformed_expansion.keys())[-1]),"var{}".format(i+1),''])
     installation_csv.append(var_row)
 
     
     j = 0
-    for year, val in expansion_limit_with_additional_years.items():
+    for year, val in transformed_expansion.items():
         installation_csv.append(["#var{}".format(j), 0, 0, val/1000.0, ''])        
         j += 1
