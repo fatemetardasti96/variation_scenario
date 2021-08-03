@@ -38,6 +38,7 @@ def create_demand_electric_per_a_block(demand_dict, region_csv):
 
 
 def create_primary_energy_with_timeseries(primary_energy_with_timeseries, region, avoid_repetition, region_csv):
+    avoid_repetition[region].append("ELECTRICITY")
     for elem in primary_energy_with_timeseries:
         input_energy, tech_type = elem['energy'], elem['tech_type']
         if tech_type == 'trade export':
@@ -58,15 +59,15 @@ def create_primary_energy_with_timeseries(primary_energy_with_timeseries, region
             region_csv.append(["potential", "#type", lookUpTable, "#data_source_path", source_path])
 
 
-def determine_primary_source_path(region, input_energy):
-    domestic_limit_path = 'TimeSeries/PrimaryEnergyLimited_{}_{}.csv'.format(region, input_energy)
+def determine_primary_source_path(region, input_energy, cwd):
+    domestic_limit_path = '{}/TimeSeries/PrimaryEnergyLimited_{}_{}.csv'.format(cwd, region, input_energy)
     if Path(domestic_limit_path).exists():
         return './TimeSeries/PrimaryEnergyLimited_{}_{}.csv'.format(region, input_energy)
     else:
         return './TimeSeries/PrimaryEnergyUnlimited_minusOne.csv'
 
 
-def create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited_minus_one, region, avoid_repetition, region_csv):
+def create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited_minus_one, region, avoid_repetition, region_csv, cwd):
     primary_energy_with_unlimited_minus_one_copy = primary_energy_with_unlimited_minus_one.copy()
     primary_energy_with_unlimited_minus_one_copy.append({'energy':'CO2', 'tech_type':'', 'tech':''})
     for elem in primary_energy_with_unlimited_minus_one_copy:
@@ -85,7 +86,7 @@ def create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited
             avoid_repetition[region].append(energy)
             region_csv.append(["#primary_energy", "#code", input_energy.replace(' ','_').upper()])
             lookUpTable = "TBD_lookupTable"
-            source_path = determine_primary_source_path(region, input_energy)    
+            source_path = determine_primary_source_path(region, input_energy, cwd)    
             region_csv.append(["potential", "#type", lookUpTable, "#data_source_path", source_path])
 
 
@@ -124,7 +125,6 @@ def apply_diff(installed_capacity_dict, lifetime):
     available_capacity_years = list(installed_capacity_dict.keys())
     starting_year = available_capacity_years[0]
     ending_year = available_capacity_years[-1]
-    end_of_lifetime = starting_year + lifetime
     capacity_dict_all_years = {key:0 for key in range(starting_year-int(lifetime), ending_year-int(lifetime))}
     # 2016, 2020,2030,2040,2050 
     # capacity_dict_all_years[starting_year] = installed_capacity_dict[starting_year]
@@ -132,7 +132,7 @@ def apply_diff(installed_capacity_dict, lifetime):
         start = available_capacity_years[i]
         end   = available_capacity_years[i+1]
         for year in range(start, end):
-            capacity_dict_all_years[year-lifetime] = ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))
+            capacity_dict_all_years[year-int(lifetime)] = ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))
     try:
         for year in range(available_capacity_years[-2], ending_year+1):        
             capacity_dict_all_years[year-int(lifetime)] = installed_capacity_dict[ending_year]/11

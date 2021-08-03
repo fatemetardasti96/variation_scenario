@@ -73,7 +73,7 @@ def select_expansion_procedure(expansion_limit):
         return {2016: expansion_limit[0]['value']/36, 2050: expansion_limit[-1]['value']/36}
     else:
         #Procedure when values change over the years
-        return {2016: expansion_limit[0]['value']/4, 2019: expansion_limit[0]['value'], 2020: (expansion_limit[1]['value']-expansion_limit[0]['value'])/10,
+        return {2016: expansion_limit[0]['value']/4, 2019: expansion_limit[0]['value']/4, 2020: (expansion_limit[1]['value']-expansion_limit[0]['value'])/10,
             2029: (expansion_limit[1]['value']-expansion_limit[0]['value'])/10, 2030: (expansion_limit[2]['value']-expansion_limit[1]['value'])/10,
             2039: (expansion_limit[2]['value']-expansion_limit[1]['value'])/10, 2040: (expansion_limit[3]['value']-expansion_limit[2]['value'])/10,
             2050: (expansion_limit[3]['value']-expansion_limit[2]['value'])/10}

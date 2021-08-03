@@ -32,7 +32,7 @@ def create_region_dir(regions_data, cwd):
         #installation or expansion limit
         primary_energy_with_unlimited_minus_one = iterate_mapping(regions_data, "scalars[? (parameter_name == 'installed capacity' || parameter_name == 'expansion limit') && region == '{}'].\
                 {{energy: input_energy_vector, tech_type: technology_type, tech: technology}}".format(region))
-        create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited_minus_one, region, avoid_repetition, region_csv)
+        create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited_minus_one, region, avoid_repetition, region_csv, cwd)
 
 
         avoid_installation_repetition[region] = []
@@ -41,5 +41,5 @@ def create_region_dir(regions_data, cwd):
         
         create_installation_block(installation_list, region_csv)
 
-    
+        region_csv.append(["#endblock"])
         seperator_to_csv(region_csv, cwd+'/regions/'+region+'.csv')

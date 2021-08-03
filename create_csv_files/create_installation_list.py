@@ -99,8 +99,8 @@ def create_installation_list(regions_data, concrete_data, cwd):
     installationList_csv = [['#comment','MOUNTING-CODE.TECH-CODE;DATA-TYPE;DATA(may contain placeholders varxy)', '(if applicable) next lines:','#varxy', 'INIT-POINT', 'lBOUND', 'uBOUND']]
     for code in installation_lists:
         if installation_csv[code]:
-            installation_list_path = '{}/installation_lists/InstallationList_{}.csv'.format(cwd, code)
-            seperator_to_csv(installation_csv[code], installation_list_path)
-            installationList_csv.append(['/include(.{})'.format(installation_list_path)])
+            installation_list_path = './installation_lists/InstallationList_{}.csv'.format(code)
+            seperator_to_csv(installation_csv[code], cwd+'/'+installation_list_path)
+            installationList_csv.append(['/include({})'.format(installation_list_path)])
 
     seperator_to_csv(installationList_csv, cwd+'/InstallationList.csv')
