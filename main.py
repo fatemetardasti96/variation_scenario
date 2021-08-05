@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime
 import logging
+import os
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.INFO)
 
 from read_write_db import dump_region_db, load_region_db, dump_concrete_db, load_concrete_db
@@ -31,6 +32,9 @@ if __name__ == '__main__':
         cwd = 'ID'+str(SCENARIO_ID)+'_'+datetime.now().strftime('%Y-%m-%d_%H-%M')
         Path(cwd).mkdir(parents= True)
     # cwd = '.'
+
+    if not os.path.exists('db'):
+        os.makedirs('db')
 
     logging.info("start loading data")
     dump_region_db(SCENARIO_ID)
