@@ -30,9 +30,13 @@ def create_storage(concrete_data, regions_data, cwd):
     for elem in storages:
         technology, technology_type, inp_energy = elem.split('_')                        
         efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'efficiency', 2016, 1)
+        efficiency_list = [{"year": 1900, "value": efficiency_list[0]["value"]}] + efficiency_list
         lifetime_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'lifetime', 2016, 0)
+        lifetime_list = [{"year": 1900, "value": lifetime_list[0]["value"]}] + lifetime_list
         capital_cost_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'capital costs', 2016, 0)
+        capital_cost_list = [{"year": 1900, "value": capital_cost_list[0]["value"]}] + capital_cost_list
         fixed_cost_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'fixed costs', 2016, 0)
+        fixed_cost_list = [{"year": 1900, "value": fixed_cost_list[0]["value"]}] + fixed_cost_list
                         
         total_cost_list = compute_total_cost(interest_rate, lifetime_list, capital_cost_list)
         OaM_rate_list = compute_OaM_rate(interest_rate, lifetime_list, fixed_cost_list, capital_cost_list)

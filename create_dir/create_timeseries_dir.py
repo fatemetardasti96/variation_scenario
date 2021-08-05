@@ -3,7 +3,7 @@ from pathlib import Path
 from build_in_functions import iterate_mapping
 from type_def.input_energy import InputEnergy
 from type_def.technology_type import TechnologyType
-from create_block.create_timeseries import create_timeseries_block, sort_series_timeindex, insert_series_in_between
+from create_block.create_timeseries import create_timeseries_block, sort_series_timeindex, insert_series_in_between, handle_trade_import_series
 from create_csv_files.create_primary_energy_minus_one import primary_energy_minus_one_detail_block
 
 
@@ -34,7 +34,9 @@ def create_timeseries_dir(regions_db, cwd):
             elif (input_energy == InputEnergy.AIR and tech_type == TechnologyType.OFFSHORE):
                 input_energy = InputEnergy.WIND_OFF
             elif tech_type == TechnologyType.TRADE_IMPORT:
-                input_energy = 'TRADE_IMPORT'                        
+                input_energy = 'TRADE_IMPORT'   
+                inserted_series = handle_trade_import_series(regions_db, region, inserted_series)                     
+
             create_timeseries_block(region, input_energy, inserted_series, cwd)
 
     primary_energy_minus_one_detail_block(cwd)

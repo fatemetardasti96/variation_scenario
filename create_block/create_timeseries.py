@@ -1,3 +1,4 @@
+from build_in_functions import iterate_mapping
 import numpy as np
 
 from write_to_csv import seperator_to_csv
@@ -8,7 +9,7 @@ def create_timeseries_block(region, input_energy, series_timeindex, cwd):
     csv_list.append(["#comment","===============generation time series============================================"])
     base_type = "DVP_const"
     base = 1000000
-    sdata = series_timeindex[0]["timeindex_start"].replace('T','_')[:-3]
+    sdata = series_timeindex[0]["timeindex_start"][:-3]
     csv_list.append(["base", "#type", base_type, "#data", sdata, base])
 
     value_type = "TS_repeat_const"    
@@ -71,3 +72,32 @@ def insert_series_in_between(sorted_series_timeindex):
     return result_series
 
     
+def find_capacity_factor(regions_data, region, expected_year):
+    all_available_years = [2016, 2020, 2030, 2040, 2050]
+    if expected_year in all_available_years:
+        year = expected_year
+    else:
+        expected_year_idx = sorted([2016, 2020, 2030, 2040, 2050, expected_year]).index(expected_year)
+        year = all_available_years[expected_year_idx-1]
+
+    installed_capacity_year = iterate_mapping(regions_data, "scalars[? parameter_name=='installed capacity' && technology=='transmission' && technology_type=='trade import'\
+        && year==`{}` && region=='{}'].value".format(year, region))[0]
+
+    installed_capacity_2016 = iterate_mapping(regions_data, "scalars[? parameter_name=='installed capacity' && technology=='transmission' && technology_type=='trade import'\
+        && year==`2016` && region=='{}'].value".format(region))[0]
+
+    factor = installed_capacity_year/installed_capacity_2016
+    
+    return factor
+
+
+
+def handle_trade_import_series(regions_data, region, series):
+    trade_series = []
+    for elem in series:
+        year = int(elem['timeindex_start'].split('-')[0])
+        series_val = elem['series']
+        factor = find_capacity_factor(regions_data, region, year)
+        trade_series.append({"timeindex_start": "{}-01-01_00:00".format(year), "series": list(np.array(series_val)*factor)})
+    
+    return trade_series

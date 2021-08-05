@@ -9,7 +9,7 @@ def create_links(concrete_data, cwd):
     link_list.append(["#comment","===============LINK Parameterisation============================================"])
     link_list.append(["#blockwise"])
 
-    transmission_installed_capacity = iterate_mapping(concrete_data, "oed_scalars[? parameter_name == 'installed capacity' && technology== 'transmission' && (technology_type== 'hvac' || technology_type=='DC')]")
+    transmission_installed_capacity = iterate_mapping(concrete_data, "oed_scalars[? (parameter_name == 'installed capacity' || parameter_name == 'expansion limit') && technology== 'transmission' && (technology_type== 'hvac' || technology_type=='DC')]")
     code_list = []
     for elem in transmission_installed_capacity:
         region_A, region_B = elem['region']

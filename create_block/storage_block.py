@@ -4,7 +4,7 @@ from code_generator.storage_code_generator import storage_code_generator
 def create_storage_block(technology_type, efficiency_list, lifetime_list, total_cost_list, OaM_rate_list, storage_list):
     code = storage_code_generator(technology_type)['code']
     name = code
-    input_energy = code = storage_code_generator(technology_type)['input_energy']
+    input_energy = storage_code_generator(technology_type)['input_energy']
 
     storage_list.append(["#code",code,"#name",name,"#input",input_energy,"#output", input_energy])
 

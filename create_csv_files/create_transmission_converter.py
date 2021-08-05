@@ -5,11 +5,13 @@ from build_in_functions import iterate_mapping
 from find_parameters.transmission_param_handler import handle_transmission_param
 from write_to_csv import seperator_to_csv
 from create_block.transmission_block import create_transmission_block
+from find_parameters.compute_OaM_rate import compute_OaM_rate
+from find_parameters.compute_total_cost import compute_total_cost
 
 
 def create_transmission(concrete_data, regions_data, cwd):
 
-    transmission_installed_capacity = iterate_mapping(concrete_data, "oed_scalars[? parameter_name == 'installed capacity' && technology== 'transmission' && technology_type== 'hvac']")
+    transmission_installed_capacity = iterate_mapping(concrete_data, "oed_scalars[? (parameter_name == 'installed capacity' || parameter_name == 'expansion limit') && technology== 'transmission' && technology_type== 'hvac']")
 
     interest_rate_list = iterate_mapping(regions_data, "unique(scalars[? parameter_name == 'WACC'].value)")
     efficiency_list = iterate_mapping(concrete_data, "unique(oed_scalars[? technology == 'transmission' && technology_type== 'hvac' && parameter_name=='efficiency'].value)")
@@ -23,9 +25,13 @@ def create_transmission(concrete_data, regions_data, cwd):
     capital_cost = handle_transmission_param(capital_cost_list, 0, 'capital cost')
     fixed_cost = handle_transmission_param(fixed_cost_list, 0, 'fixed cost')
 
-    ANF = (((1+interest_rate)**(lifetime))*interest_rate)/(((1+interest_rate)**(lifetime))-1)
-    OaM_rate = float(fixed_cost)/float(capital_cost * ANF)
-    total_cost = capital_cost * (ANF+1)
+    efficiency_list_installing = [{"year": 1900, "value": efficiency}, {"year": 2016, "value": efficiency}]
+    lifetime_list_installing = [{"year": 1900, "value": lifetime}, {"year": 2016, "value": lifetime}]
+    capital_cost_list_installing = [{"year": 1900, "value": capital_cost}, {"year": 2016, "value": capital_cost}]
+    fixed_cost_list_installing = [{"year": 1900, "value": fixed_cost}, {"year": 2016, "value": fixed_cost}]
+
+    total_cost_list = compute_total_cost(interest_rate, lifetime_list_installing, capital_cost_list_installing)
+    OaM_rate_list = compute_OaM_rate(interest_rate, lifetime_list_installing, fixed_cost_list_installing, capital_cost_list_installing)
     
 
     transmission_list = []
@@ -36,12 +42,12 @@ def create_transmission(concrete_data, regions_data, cwd):
         region_A, region_B = elem['region']
         code  = 'hvac' + '_' + region_A + '_' + region_B
         if not code in code_list:
-            create_transmission_block(code, efficiency, total_cost, lifetime, OaM_rate, transmission_list)
+            create_transmission_block(code, efficiency_list_installing, total_cost_list, lifetime_list_installing, OaM_rate_list, transmission_list)
             code_list.append(code)
         else:
             continue
 
-    transmission_installed_capacity_DC = iterate_mapping(concrete_data, "oed_scalars[? parameter_name == 'installed capacity' && technology== 'transmission' && technology_type== 'DC']")
+    transmission_installed_capacity_DC = iterate_mapping(concrete_data, "oed_scalars[? (parameter_name == 'installed capacity' || parameter_name == 'expansion limit') && technology== 'transmission' && technology_type== 'DC']")
 
     efficiency_list = iterate_mapping(concrete_data, "unique(oed_scalars[? technology == 'transmission' && technology_type== 'DC' && parameter_name=='efficiency'].value)")
     lifetime_list = iterate_mapping(concrete_data, "unique(oed_scalars[? technology == 'transmission' && technology_type== 'DC' && parameter_name=='lifetime'].value)")
@@ -53,16 +59,21 @@ def create_transmission(concrete_data, regions_data, cwd):
     capital_cost = handle_transmission_param(capital_cost_list, 0, 'capital cost')
     fixed_cost = handle_transmission_param(fixed_cost_list, 0, 'fixed cost')
 
-    ANF = (((1+interest_rate)**(lifetime))*interest_rate)/(((1+interest_rate)**(lifetime))-1)
-    OaM_rate = float(fixed_cost)/float(capital_cost * ANF)
-    total_cost = capital_cost * (ANF+1)
+    efficiency_list_installing = [{"year": 1900, "value": efficiency}, {"year": 2016, "value": efficiency}]
+    lifetime_list_installing = [{"year": 1900, "value": lifetime}, {"year": 2016, "value": lifetime}]
+    capital_cost_list_installing = [{"year": 1900, "value": capital_cost}, {"year": 2016, "value": capital_cost}]
+    fixed_cost_list_installing = [{"year": 1900, "value": fixed_cost}, {"year": 2016, "value": fixed_cost}]
+
+    total_cost_list = compute_total_cost(interest_rate, lifetime_list_installing, capital_cost_list_installing)
+    OaM_rate_list = compute_OaM_rate(interest_rate, lifetime_list_installing, fixed_cost_list_installing, capital_cost_list_installing)
+    
 
     code_list = []
     for elem in transmission_installed_capacity_DC:
         region_A, region_B = elem['region']
         code  = 'hvac' + '_' + region_A + '_' + region_B
         if not code in code_list:
-            create_transmission_block(code, efficiency, total_cost, lifetime, OaM_rate, transmission_list)
+            create_transmission_block(code, efficiency_list_installing, total_cost_list, lifetime_list_installing, OaM_rate_list, transmission_list)
             code_list.append(code)
         else:
             continue
