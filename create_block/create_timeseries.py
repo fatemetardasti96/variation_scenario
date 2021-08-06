@@ -86,7 +86,11 @@ def find_capacity_factor(regions_data, region, expected_year):
     installed_capacity_2016 = iterate_mapping(regions_data, "scalars[? parameter_name=='installed capacity' && technology=='transmission' && technology_type=='trade import'\
         && year==`2016` && region=='{}'].value".format(region))[0]
 
-    factor = installed_capacity_year/installed_capacity_2016
+    try:
+        factor = installed_capacity_year/installed_capacity_2016
+    except:
+        print("no installtion capacity for 2016!")
+        factor = 0
     
     return factor
 
