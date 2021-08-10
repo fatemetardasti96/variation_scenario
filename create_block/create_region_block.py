@@ -99,6 +99,7 @@ def region_converter_block(converter_code, installed_capacity_dict, region_csv):
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
     installation_row.extend(["{}-12-31_00:00".format(year), value])
+    installation_row.extend(["{}-01-01_00:00".format(year+1), 0])
     region_csv.append(installation_row)
 
 
@@ -109,6 +110,7 @@ def region_multiconverter_block(code, installed_capacity_dict, region_csv):
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
     installation_row.extend(["{}-12-31_00:00".format(year), value])
+    installation_row.extend(["{}-01-01_00:00".format(year+1), 0])
     region_csv.append(installation_row)
 
 
@@ -217,7 +219,7 @@ def handle_incerasing_capacity(installed_capacity_dict, lifetime):
 
 def apply_diff(installed_capacity_dict, tech_type, lifetime):
     if tech_type == TechnologyType.TRADE_IMPORT:
-        return {2016: installed_capacity_dict[2016]}
+        return {2016: max(list(installed_capacity_dict.values())/1000.0}
 
     available_capacity_years = list(installed_capacity_dict.keys())
     starting_year = available_capacity_years[0]
@@ -298,7 +300,7 @@ def create_installation_dict(regions_data, installation_elements, region, avoid_
                 lifetime = 0
             if tech == 'transmission' and tech_type == 'hvac':
                 continue
-            installed_capacity_dict[2060] = 0
+            # installed_capacity_dict[2060] = 0
             installation_diff = apply_diff(installed_capacity_dict, tech_type, lifetime)
             installation_list.append({'input_energy': input_energy, 'tech_type': tech_type, 'tech': tech, 'value': installation_diff})    
         else:

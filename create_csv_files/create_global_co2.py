@@ -6,6 +6,11 @@ from find_parameters.general_parameter_handler import find_parameter_year_value
 def create_global_co2(regions_data, cwd):
     filename = "{}/TimeSeries/LookupTable_globalCO2.csv".format(cwd)
     emission_limit = find_parameter_year_value(regions_data, 'unknown', 'unknown', 'unknown', 'emission limit', 2016, 0)
+    all_years = [e["year"] for e in emission_limit]
+    if 2016 not in all_years:
+        emission_limit.append({"year": 2016, "value": 1E9})
+    if 2020 not in all_years:
+        emission_limit.append({"year": 2020, "value": 1E9})
     global_csv = []
     global_csv.append(["#comment", "unlimited -1 primary resource"])
     base_row = ["base", "#type", "DVP_linear", "#data"]
