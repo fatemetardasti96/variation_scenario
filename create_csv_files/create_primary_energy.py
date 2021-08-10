@@ -14,7 +14,7 @@ def is_renewable(energy):
     return False
 
 
-def create_primary_energies(concrete_data, regions_data, cwd):
+def create_primary_energies(regions_data, cwd):
     primary_energy_list = []
     primary_energy_list.append(['#comment','===============Primary Energy============================================'])
     primary_energy_list.append(['#blockwise'])

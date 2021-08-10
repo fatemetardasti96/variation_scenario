@@ -13,8 +13,8 @@ def create_link_block(region_A, region_B, length, installed_capacity, link_list)
     link_list.append(["#converter","#code",converter_code])
 
     cap_row_list = ["installation","#type",type_,"#data"]
-    for cap_elem in installed_capacity:
-        year, value = cap_elem['year'], cap_elem['value']
+    for year in installed_capacity:
+        value = installed_capacity[year]
         cap_row_list.extend([str(year) + "-01-01_00:00", value])
     link_list.append(cap_row_list)
 

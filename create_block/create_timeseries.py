@@ -89,8 +89,10 @@ def find_capacity_factor(regions_data, region, expected_year):
     try:
         factor = installed_capacity_year/installed_capacity_2016
     except:
-        print("no installtion capacity for 2016!")
-        factor = 0
+        print("no installtion capacity for 2016 in {}!".format(region))
+        installed_capacity_denum = max(iterate_mapping(regions_data, "scalars[? parameter_name=='installed capacity' && technology=='transmission' && technology_type=='trade import'\
+        && region=='{}'].value".format(region)))
+        factor = installed_capacity_year/installed_capacity_denum
     
     return factor
 

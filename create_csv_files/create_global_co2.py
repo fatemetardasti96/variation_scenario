@@ -8,7 +8,7 @@ def create_global_co2(regions_data, cwd):
     emission_limit = find_parameter_year_value(regions_data, 'unknown', 'unknown', 'unknown', 'emission limit', 2016, 0)
     global_csv = []
     global_csv.append(["#comment", "unlimited -1 primary resource"])
-    base_row = ["base", "#type", "DVP_const", "#data"]
+    base_row = ["base", "#type", "DVP_linear", "#data"]
     val_row = ["value", "#type", "DVP_linear", "#data"]
     
     for elem in emission_limit:

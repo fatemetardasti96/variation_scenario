@@ -1,5 +1,6 @@
 from pathlib import Path
 from enum import Enum
+from collections import OrderedDict
 
 from type_def.input_energy import InputEnergy
 from type_def.technology import Technology
@@ -69,7 +70,7 @@ def determine_primary_source_path(region, input_energy, cwd):
 
 def create_primary_energy_with_unlimited_minus_one(primary_energy_with_unlimited_minus_one, region, avoid_repetition, region_csv, cwd):
     primary_energy_with_unlimited_minus_one_copy = primary_energy_with_unlimited_minus_one.copy()
-    if region != 'Baltic' or region != 'North':
+    if region != 'Baltic' and region != 'North':
         primary_energy_with_unlimited_minus_one_copy.append({'energy':'CO2', 'tech_type':'', 'tech':''})
     for elem in primary_energy_with_unlimited_minus_one_copy:
         input_energy, tech_type = elem['energy'], elem['tech_type']
@@ -214,9 +215,6 @@ def handle_incerasing_capacity(installed_capacity_dict, lifetime):
 
 
 
-
-
-
 def apply_diff(installed_capacity_dict, tech_type, lifetime):
     if tech_type == TechnologyType.TRADE_IMPORT:
         return {2016: installed_capacity_dict[2016]}
@@ -224,21 +222,55 @@ def apply_diff(installed_capacity_dict, tech_type, lifetime):
     available_capacity_years = list(installed_capacity_dict.keys())
     starting_year = available_capacity_years[0]
     ending_year = available_capacity_years[-1]
-    capacity_dict_all_years = {key:0 for key in range(starting_year-int(lifetime)+1, ending_year-int(lifetime)+1)}
-    # 2016, 2020,2030,2040,2050 
+    capacity_dict_all_years = {key: 0 for key in range(starting_year - int(lifetime) + 1, ending_year - int(lifetime) + 1)}
+    #offset_dict = {key: 0 for key in range(starting_year,ending_year+1)}
+    # 2016, 2020,2030,2040,2050
     # capacity_dict_all_years[starting_year] = installed_capacity_dict[starting_year]
     for i in range(len(available_capacity_years)-1):
         start = available_capacity_years[i]
         end   = available_capacity_years[i+1]
-        for year in range(start, end):
-            capacity_dict_all_years[year-int(lifetime)+1] = ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))
-            if capacity_dict_all_years[year-int(lifetime)+1]<0:
-                return handle_incerasing_capacity(installed_capacity_dict, lifetime)
+        if (installed_capacity_dict[start]-installed_capacity_dict[end]) > 0:
+            for year in range(start, end):
+                count_lifetime = 0
+                while year-int(count_lifetime)+1 >= starting_year:
+                    try:
+                        temp_cap = capacity_dict_all_years[year - int(count_lifetime) - int(lifetime) + 1] + \
+                                ((installed_capacity_dict[start]-installed_capacity_dict[end])/(end-start))
+                        #           (offset_dict[year])
+                        #if temp_cap < 0:
+                        #    offset_dict[year] = offset_dict[year] - abs(temp_cap)
+                        #else:
+                        #   offset_dict[year] = offset_dict[year] - (offset_dict[year])
+                        #if offset_dict[year] <= 0:
+                        #   offset_dict[year] = 0
+                        if temp_cap > 0:
+                            capacity_dict_all_years[year-int(count_lifetime)-int(lifetime)+1] = temp_cap/1e3
+                    except:
+                        temp_cap = ((installed_capacity_dict[start] - installed_capacity_dict[end]) / (end - start))
+                        #          (offset_dict[year])
+                        #if temp_cap < 0:
+                        #    offset_dict[year] = offset_dict[year] - abs(temp_cap)
+                        #else:
+                        #    offset_dict[year] = offset_dict[year] - (offset_dict[year])
+                        #if offset_dict[year] <= 0:
+                        #    offset_dict[year] = 0
+                        if temp_cap > 0:
+                            capacity_dict_all_years[year - int(count_lifetime) - int(lifetime) + 1] = temp_cap/1e3
+                    count_lifetime = count_lifetime + int(lifetime)
+        # if (installed_capacity_dict[start]-installed_capacity_dict[end]) < 0:
+        #     new_cap = installed_capacity_dict[end] - installed_capacity_dict[start]
+        #     capacity_dict_all_years[end] = new_cap/1e3
+            #capacity_dict_all_years[end-int(lifetime)+1] = -new_cap
+            #for years in range(end, end + int(lifetime)):
+            #   offset_dict[years] = offset_dict[years] + new_cap
+                #return handle_incerasing_capacity(installed_capacity_dict, lifetime)
+    #if installed_capacity_dict[available_capacity_years[-1]]>installed_capacity_dict[available_capacity_years[0]]:
+    #    capacity_dict_all_years[available_capacity_years[-1]-int(lifetime)+1-int(lifetime)+1] = installed_capacity_dict[available_capacity_years[-1]]
+    # sort keys in dict
+    # sorted_capacity_dict_all_years = OrderedDict(sorted(capacity_dict_all_years.items()))
+    sorted_capacity_dict_all_years = {k:v for k,v in sorted(capacity_dict_all_years.items())}
+    return sorted_capacity_dict_all_years
 
-    if installed_capacity_dict[available_capacity_years[-1]]>installed_capacity_dict[available_capacity_years[0]]:
-        capacity_dict_all_years[available_capacity_years[-1]-int(lifetime)+1-int(lifetime)+1] = installed_capacity_dict[available_capacity_years[-1]]
-
-    return capacity_dict_all_years
 
 
 def create_installation_dict(regions_data, installation_elements, region, avoid_installation_repetition):
@@ -266,6 +298,7 @@ def create_installation_dict(regions_data, installation_elements, region, avoid_
                 lifetime = 0
             if tech == 'transmission' and tech_type == 'hvac':
                 continue
+            installed_capacity_dict[2060] = 0
             installation_diff = apply_diff(installed_capacity_dict, tech_type, lifetime)
             installation_list.append({'input_energy': input_energy, 'tech_type': tech_type, 'tech': tech, 'value': installation_diff})    
         else:
