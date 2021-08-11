@@ -65,7 +65,7 @@ def insert_series_in_between(sorted_series_timeindex):
     result_series = []
     for year in all_years:
         idx = [i for i, elem in enumerate(available_years) if elem<=year][-1]
-        expected_series_len = timeseries_length(year)
+        expected_series_len = 8760
         series = adjust_series_len(expected_series_len, sorted_series_timeindex[idx]["series"])
         result_series.append({"timeindex_start": "{}-01-01_00:00".format(year), "series": series})
 

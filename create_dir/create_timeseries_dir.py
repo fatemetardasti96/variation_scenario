@@ -9,6 +9,7 @@ from create_csv_files.create_primary_energy_minus_one import primary_energy_minu
 
 def create_timeseries_dir(regions_db, cwd):
     regions = iterate_mapping(regions_db, "unique(timeseries[*].region)")
+    renewable_generation = ['photovoltaics', 'wind turbine', 'hydro turbine']
     for region in regions:
         dirname = cwd + '/' + '/TimeSeries/' + region
         Path(dirname).mkdir(exist_ok=True, parents=True)
@@ -25,7 +26,10 @@ def create_timeseries_dir(regions_db, cwd):
             .format(region, input_energy, tech_type))
 
             sorted_series_timeindex = sort_series_timeindex(series_timeindex)
-            inserted_series = insert_series_in_between(sorted_series_timeindex)
+            if tech  in renewable_generation:
+                inserted_series = sort_series_timeindex[0]
+            else:
+                inserted_series = insert_series_in_between(sorted_series_timeindex)
 
             if tech_type == 'trade export':
                 continue
@@ -36,7 +40,7 @@ def create_timeseries_dir(regions_db, cwd):
             elif tech_type == TechnologyType.TRADE_IMPORT:
                 input_energy = 'TRADE_IMPORT'   
                 inserted_series = handle_trade_import_series(regions_db, region, inserted_series)                     
-
+        
             create_timeseries_block(region, input_energy, inserted_series, cwd)
 
     primary_energy_minus_one_detail_block(cwd)

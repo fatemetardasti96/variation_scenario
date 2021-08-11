@@ -38,10 +38,10 @@ def find_parameter_year_value(db, technology, technology_type, inp_energy, param
 
 
 def find_parameter_year_value_key_val(db, key, val, param_name, default_year, default_value):
-    list_of_param_values = iterate_mapping(db, "unique(scalars[? parameter_name == '{}' && {}=={}].value)".format(param_name, key, val))
+    list_of_param_values = iterate_mapping(db, "unique(scalars[? parameter_name == '{}' && {}=='{}'].value)".format(param_name, key, val))
 
     if len(list_of_param_values) == 1:
-        param_year = sorted(iterate_mapping(db, "unique(scalars[? parameter_name == '{}' && {}=={}].year)".format(param_name, key, val)))[0]
+        param_year = sorted(iterate_mapping(db, "unique(scalars[? parameter_name == '{}' && {}=='{}'].year)".format(param_name, key, val)))[0]
         return [{'year': param_year, 'value': list_of_param_values[0]}]
     elif not len(list_of_param_values):
         return [{'year': default_year, 'value': default_value}]

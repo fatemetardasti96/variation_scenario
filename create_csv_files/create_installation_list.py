@@ -1,4 +1,5 @@
 from pathlib import Path
+from type_def.input_energy import InputEnergy
 
 from build_in_functions import iterate_mapping
 from code_generator.installation_code_generator import installation_code_generator
@@ -81,7 +82,7 @@ def create_installation_list(regions_data, concrete_data, cwd):
                             create_installation_list_block(region + '.' + Code.H2_ELECTROLYSER_FC, installed_capacity, e2p_ratio, expansion_limit, installation_csv[Code.H2_ELECTROLYSER_FC])
                     else:
                         create_installation_list_block(name, installed_capacity, [1], expansion_limit, installation_csv[installation_list_code])
-        
+
         
     transmission_data = iterate_mapping(concrete_data,"oed_scalars[? technology == 'transmission' && (technology_type=='hvac' || technology_type=='DC')]")
     transmission_list = []
@@ -95,6 +96,43 @@ def create_installation_list(regions_data, concrete_data, cwd):
             installed_capacity_transmission = handle_multiple_years_transmission(concrete_data, technology_type, regions, 'installed capacity', 0)
             if is_capacity_smaller_than_expansion(installed_capacity_transmission, expansion_limit_tranmission):                
                 create_installation_list_block(name, installed_capacity_transmission, 1, expansion_limit_tranmission, installation_csv['hvac'])
+
+
+    """
+    Handle photovoltaics
+    """
+    
+    unique_regions = iterate_mapping(regions_data,"unique(timeseries[? timeindex_start== `{}`].region)".format('2016-01-01T00:00:00'))
+    for region in unique_regions:
+        technology = Technology.PHOTOVOLTAICS
+        technology_type = TechnologyType.ROOFTOP
+        inp_energy = InputEnergy.SOLAR
+        installed_capacity_rooftop = handle_multiple_years(regions_data, technology, technology_type, inp_energy, region, 'installed capacity', 0)
+        technology_type = TechnologyType.UTILITY
+        installed_capacity_utility = handle_multiple_years(regions_data, technology, technology_type, inp_energy, region, 'installed capacity', 0)
+        technology_type = TechnologyType.UNKNOWN
+        expansion_limit = handle_multiple_years(regions_data, technology, technology_type, inp_energy, region, 'expansion limit', 0)
+        expansion_limit_rooftop, expansion_limit_utility = [],[]
+        for elem in expansion_limit:
+            expansion_limit_utility.append({"year": elem["year"], "value": elem["value"]/2})
+            expansion_limit_rooftop.append({"year": elem["year"], "value": elem["value"]/2})
+
+        installation_list_code_rooftop = Code.PV1
+        installation_list_code_utility = Code.PV2
+        
+        name_pv1 = region + '.' + installation_list_code_rooftop
+        name_pv2 = region + '.' + installation_list_code_utility
+        
+        if installation_list_code_rooftop not in installation_lists:
+            installation_lists.append(installation_list_code_rooftop)
+            installation_csv[installation_list_code_rooftop] = []
+
+        if installation_list_code_utility not in installation_lists:
+            installation_lists.append(installation_list_code_utility)
+            installation_csv[installation_list_code_utility] = []
+
+        create_installation_list_block(name_pv1, installed_capacity_rooftop, [1], expansion_limit_rooftop, installation_csv[installation_list_code_rooftop])
+        create_installation_list_block(name_pv2, installed_capacity_utility, [1], expansion_limit_utility, installation_csv[installation_list_code_utility])
 
     installationList_csv = [['#comment','MOUNTING-CODE.TECH-CODE;DATA-TYPE;DATA(may contain placeholders varxy)', '(if applicable) next lines:','#varxy', 'INIT-POINT', 'lBOUND', 'uBOUND']]
     for code in installation_lists:

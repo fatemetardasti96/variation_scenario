@@ -80,11 +80,8 @@ def select_expansion_procedure(expansion_limit):
 
 
 def create_installation_list_block(name, installed_capacity, e2p_ratio, expansion_limit, installation_csv):
-    # transformed_expansion = transform_expansion_limit(expansion_limit)
     capacity = compute_capacity_from_e2p(installed_capacity, e2p_ratio)
     transformed_expansion = select_expansion_procedure(expansion_limit)
-    # capacity_difference, expansion_difference = apply_difference(capacity, expansion_limit)
-    # expansion_limit_with_additional_years = add_one_year_in_between(expansion_difference)
 
     var_row = [name, "#type", "DVP_linear", "#data"]
     for i in range(len(transformed_expansion)-1):
@@ -96,5 +93,6 @@ def create_installation_list_block(name, installed_capacity, e2p_ratio, expansio
     
     j = 0
     for year, val in transformed_expansion.items():
-        installation_csv.append(["#var{}".format(j), 0, 0, val/1000.0, ''])        
+        transformed_val = val/1000.0 if val>=1 else 0
+        installation_csv.append(["#var{}".format(j), 0, 0, transformed_val, ''])        
         j += 1

@@ -34,15 +34,13 @@ def create_demand_elec(regions_data, cwd):
         for timeindex_year in timeindex_years:
             year = timeindex_year.split('-')[0]
             try:            
-                timeseries_list = iterate_mapping(regions_data, "timeseries[? parameter_name == 'demand' && region == '{}' && timeindex_start == '{}'].series".format(region, timeindex_year))[0]
+                timeseries_list = iterate_mapping(regions_data, "timeseries[? parameter_name == 'demand' && region == '{}' && timeindex_start == '{}'].series".format(region, timeindex_year))[0][:8760]
             except:
-                timeseries_len = timeseries_length(year)
-                timeseries_list = [0 for i in range(timeseries_len)]
+                timeseries_list = [0] * 8760
             try:
-                tradeseries_list = iterate_mapping(regions_data, "timeseries[? parameter_name=='trade volume' && technology_type=='trade export' && region == '{}' && timeindex_start == '{}'].series".format(region, timeindex_year))[0]
+                tradeseries_list = iterate_mapping(regions_data, "timeseries[? parameter_name=='trade volume' && technology_type=='trade export' && region == '{}' && timeindex_start == '{}'].series".format(region, timeindex_year))[0][:8760]
             except:
-                timeseries_len = timeseries_length(year)
-                tradeseries_list = [0 for i in range(timeseries_len)]
+                tradeseries_list = [0] * 8760
 
             time_and_trade_list = timeseries_list + tradeseries_list
             abs_time_and_trade_list = [abs(t) for t in time_and_trade_list]
