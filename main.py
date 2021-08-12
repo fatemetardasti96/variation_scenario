@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import logging
 import os
+import json
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.INFO)
 
 from read_write_db import dump_region_db, load_region_db, dump_concrete_db, load_concrete_db
@@ -22,7 +23,7 @@ from create_csv_files.create_config_files import create_config_files
 from create_csv_files.create_global_co2 import *
 
 
-SCENARIO_ID = 48
+SCENARIO_ID = 53
 
 if __name__ == '__main__':
     if not Path('ID'+str(SCENARIO_ID)).is_dir():
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     create_transmission(concrete_data, regions_data, cwd)
     
     logging.info('start primary_energy.csv')
-    create_primary_energies(concrete_data, regions_data, cwd)
+    create_primary_energies(regions_data, cwd)
 
     logging.info('start link.csv')
     create_links(concrete_data, cwd)
@@ -67,16 +68,26 @@ if __name__ == '__main__':
     logging.info('start region.csv')
     create_region_file(regions_data, cwd)
 
+    logging.info('create timeseries directory')
     create_timeseries_dir(regions_data, cwd)
 
     create_demand_elec(regions_data, cwd)
     create_domestic_limit(regions_data, cwd)
     
     logging.info('start regions directory')
-    create_region_dir(regions_data, cwd)
+    installation_dict_for_installation = create_region_dir(regions_data, cwd, True)
+    if not os.path.exists('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID)):
+        with open('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID), 'w') as f:
+            f.write(json.dumps(installation_dict_for_installation))
+
+    
 
     logging.info('start installation directory')
-    create_installation_list(regions_data, concrete_data, cwd)
+    with open('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID), 'r') as f:
+        installation_dict_for_installation = json.loads(f.read())
+    create_installation_list(regions_data, concrete_data, installation_dict_for_installation, cwd)
     
     create_global_co2(regions_data, cwd)
     create_global(cwd)
+
+    

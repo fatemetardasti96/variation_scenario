@@ -98,7 +98,7 @@ def region_converter_block(converter_code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", converter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
-    installation_row.extend(["{}-12-31_00:00".format(year), value])
+    # installation_row.extend(["{}-12-31_00:00".format(year), value])
     installation_row.extend(["{}-01-01_00:00".format(year+1), 0])
     region_csv.append(installation_row)
 
@@ -109,7 +109,7 @@ def region_multiconverter_block(code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", multiconverter_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
-    installation_row.extend(["{}-12-31_00:00".format(year), value])
+    # installation_row.extend(["{}-12-31_00:00".format(year), value])
     installation_row.extend(["{}-01-01_00:00".format(year+1), 0])
     region_csv.append(installation_row)
 
@@ -120,7 +120,7 @@ def region_storage_block(code, installed_capacity_dict, region_csv):
     installation_row = ["installation", "#type", storage_type, "#data"]
     for year, value in installed_capacity_dict.items():
         installation_row.extend(["{}-01-01_00:00".format(year), value])
-    installation_row.extend(["{}-12-31_00:00".format(year), value])
+    # installation_row.extend(["{}-12-31_00:00".format(year), value])
     installation_row.extend(["{}-01-01_00:00".format(year+1), 0])
     region_csv.append(installation_row)
 
@@ -295,9 +295,9 @@ def create_installation_block(installation_list, region_csv):
             code = Code.H2_ELECTROLYSER
             region_converter_block(code, installation_elem['value'], region_csv)
 
-        if installation_elem['tech_type'] == TechnologyType.HYDROGEN_FUELCELL:
-            code = Code.H2_ELECTROLYSER_FC
-            region_converter_block(code, installation_elem['value'], region_csv)
+        # if installation_elem['tech_type'] == TechnologyType.HYDROGEN_FUELCELL:
+        #     code = Code.H2_ELECTROLYSER_FC
+        #     region_converter_block(code, installation_elem['value'], region_csv)
 
 
         # if installation_elem['tech'] == 'storage':
@@ -318,6 +318,18 @@ def create_installation_block(installation_list, region_csv):
 
 
 
-def transform_capacity(installation_list):
-    pass
-
+def handle_transfer_capacity_from_region_to_installation(installation_list):
+    installation_list_for_region, installation_list_for_installation = [], []
+    for elem in installation_list:
+        region_value, installation_value = {}, {}
+        installation_diff = elem['value']
+        for year in installation_diff:
+            if year<2016:
+                region_value[year] = installation_diff[year]
+            else:
+                installation_value[year] = installation_diff[year]
+        if len(region_value):
+            installation_list_for_region.append({'input_energy': elem['input_energy'], 'tech_type':elem['tech_type'], 'tech': elem['tech'], 'value':region_value})
+        if len(installation_value):
+            installation_list_for_installation.append({'input_energy': elem['input_energy'], 'tech_type':elem['tech_type'], 'tech': elem['tech'], 'value':installation_value})
+    return installation_list_for_region, installation_list_for_installation
