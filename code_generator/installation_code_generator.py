@@ -36,7 +36,7 @@ def installation_code_generator(technology, technology_type, input_energy):
             CodeGenerator(Technology.TRANSMISSION, TechnologyType.TRADE_IMPORT, InputEnergy.ELECTRICITY).to_str(): Code.TRANSMISSION_IMPORT,
             CodeGenerator(Technology.STORAGE, TechnologyType.BATTERY, InputEnergy.ELECTRICITY).to_str(): Code.Battery_Energy_storage,
             CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_GAS, InputEnergy.ELECTRICITY).to_str(): Code.H2_storage_GASTURBINE,
-            CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_FUELCELL, InputEnergy.ELECTRICITY).to_str(): Code.H2_storage_FUEL,
+            # CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_FUELCELL, InputEnergy.ELECTRICITY).to_str(): Code.H2_storage_FUEL,
             CodeGenerator(Technology.STORAGE, TechnologyType.PUMPED, InputEnergy.ELECTRICITY).to_str(): Code.PH_storage
 
             }

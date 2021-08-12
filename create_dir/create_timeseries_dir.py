@@ -27,7 +27,7 @@ def create_timeseries_dir(regions_db, cwd):
 
             sorted_series_timeindex = sort_series_timeindex(series_timeindex)
             if tech  in renewable_generation:
-                inserted_series = sort_series_timeindex[0]
+                inserted_series = [sorted_series_timeindex[0]]
             else:
                 inserted_series = insert_series_in_between(sorted_series_timeindex)
 

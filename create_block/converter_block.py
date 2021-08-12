@@ -59,11 +59,11 @@ def create_converter_block(technology, technology_type, input_energy, out_energy
         out_energy = [OutputEnergy.H2]
         handle_converter_detail_block(code, inp_energy, out_energy, is_bidirectional, efficiency_list, total_cost_list, lifetime_list, OaM_rate_list, converter_list)
 
-    if technology_type == TechnologyType.HYDROGEN_FUELCELL:
-        code = Code.H2_ELECTROLYSER_FC
-        inp_energy = InputEnergy.ELECTRIC_ENERGY
-        out_energy = [OutputEnergy.H2_FC]
-        handle_converter_detail_block(code, inp_energy, out_energy, is_bidirectional, efficiency_list, total_cost_list, lifetime_list, OaM_rate_list, converter_list)
+    # if technology_type == TechnologyType.HYDROGEN_FUELCELL:
+    #     code = Code.H2_ELECTROLYSER_FC
+    #     inp_energy = InputEnergy.ELECTRIC_ENERGY
+    #     out_energy = [OutputEnergy.H2_FC]
+    #     handle_converter_detail_block(code, inp_energy, out_energy, is_bidirectional, efficiency_list, total_cost_list, lifetime_list, OaM_rate_list, converter_list)
 
     code = converter_code_generator(technology, technology_type, input_energy)
     if technology in Technology.STORAGE:

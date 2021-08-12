@@ -16,8 +16,8 @@ def storage_code_generator(technology_type):
         {'technology_type':TechnologyType.HYDROGEN_GAS,
         'code': Code.H2_storage_GASTURBINE,
         'input_energy': InputEnergy.H2},
-        {'technology_type':TechnologyType.HYDROGEN_FUELCELL,
-        'code': Code.H2_storage_FUEL,
-        'input_energy': InputEnergy.H2_FC}
+        # {'technology_type':TechnologyType.HYDROGEN_FUELCELL,
+        # 'code': Code.H2_storage_FUEL,
+        # 'input_energy': InputEnergy.H2_FC}
     ]
     return [code_book for code_book in storage_code_book if code_book['technology_type'] == technology_type][0]

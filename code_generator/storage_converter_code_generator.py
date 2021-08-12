@@ -19,9 +19,9 @@ def storage_converter_generator(technology_type):
         'code': Code.CCH2_TURBINE,
         'input_energy': InputEnergy.H2,
         'output_energy': OutputEnergy.ELECTRIC_ENERGY},
-        {'technology_type':TechnologyType.HYDROGEN_FUELCELL,
-        'code': Code.FUEL_CELL,
-        'input_energy': InputEnergy.H2_FC,
-        'output_energy': OutputEnergy.ELECTRIC_ENERGY}
+        # {'technology_type':TechnologyType.HYDROGEN_FUELCELL,
+        # 'code': Code.FUEL_CELL,
+        # 'input_energy': InputEnergy.H2_FC,
+        # 'output_energy': OutputEnergy.ELECTRIC_ENERGY}
     ]
     return [code_book for code_book in storage_converter_code_book if code_book['technology_type'] == technology_type][0]

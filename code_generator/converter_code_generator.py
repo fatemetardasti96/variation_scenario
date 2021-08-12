@@ -16,7 +16,7 @@ def converter_code_generator(technology, technology_type, inp_energy):
         CodeGenerator(Technology.TRANSMISSION, TechnologyType.TRADE_IMPORT, InputEnergy.ELECTRICITY).to_str(): Code.TRANSMISSION_IMPORT,
         CodeGenerator(Technology.STORAGE, TechnologyType.BATTERY, InputEnergy.ELECTRICITY).to_str(): Code.BAT1POWER,
         CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_GAS, InputEnergy.ELECTRICITY).to_str(): Code.CCH2_TURBINE,
-        CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_FUELCELL, InputEnergy.ELECTRICITY).to_str(): Code.FUEL_CELL,
+        # CodeGenerator(Technology.STORAGE, TechnologyType.HYDROGEN_FUELCELL, InputEnergy.ELECTRICITY).to_str(): Code.FUEL_CELL,
         CodeGenerator(Technology.STORAGE, TechnologyType.PUMPED, InputEnergy.ELECTRICITY).to_str(): Code.PH_TURBINE
     }
 
