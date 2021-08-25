@@ -14,28 +14,28 @@ def create_storage_block(technology_type, efficiency_list, lifetime_list, total_
     for efficiency_elem in efficiency_list:
         year, value = efficiency_elem['year'], efficiency_elem['value']
         efficiency_row_list.extend([str(year) + "-01-01_00:00", value])
-    efficiency_row_list.extend([str(year+1) + "-01-01_00:00", 0])
+    efficiency_row_list.extend(["2051-01-01_00:00", value])
     storage_list.append(efficiency_row_list)
 
     cost_row_list = ["cost","#type",type_,"#data"]
     for cost_elem in total_cost_list:
         year, value = cost_elem['year'], cost_elem['value']
         cost_row_list.extend([str(year) + "-01-01_00:00", value])
-    cost_row_list.extend([str(year+1) + "-01-01_00:00", 0])
+    cost_row_list.extend(["2051-01-01_00:00", value])
     storage_list.append(cost_row_list)
 
     lifetime_row_list = ["lifetime","#type",type_,"#data"]
     for lifetime_elem in lifetime_list:
         year, value = lifetime_elem['year'], lifetime_elem['value']
         lifetime_row_list.extend([str(year) + "-01-01_00:00", value])
-    lifetime_row_list.extend([str(year+1) + "-01-01_00:00", 0])
+    lifetime_row_list.extend(["2051-01-01_00:00", value])
     storage_list.append(lifetime_row_list)
 
     OaM_rate_row_list = ["OaM_rate","#type",type_,"#data"]
     for OaM_rate_elem in OaM_rate_list:
         year, value = OaM_rate_elem['year'], OaM_rate_elem['value']
         OaM_rate_row_list.extend([str(year) + "-01-01_00:00", value])
-    OaM_rate_row_list.extend([str(year+1) + "-01-01_00:00", 0])
+    OaM_rate_row_list.extend(["2051-01-01_00:00", value])
     storage_list.append(OaM_rate_row_list)
 
     storage_list.append(["#endblock"])

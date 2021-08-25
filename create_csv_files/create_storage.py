@@ -29,7 +29,7 @@ def create_storage(concrete_data, regions_data, cwd):
     storage_list.append(["#blockwise"])
     for elem in storages:
         technology, technology_type, inp_energy = elem.split('_')                        
-        efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'efficiency', 2016, 1)
+        efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'output ratio', 2016, 1)
         efficiency_list = [{"year": 1900, "value": efficiency_list[0]["value"]}] + efficiency_list
         lifetime_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'lifetime', 2016, 0)
         lifetime_list = [{"year": 1900, "value": lifetime_list[0]["value"]}] + lifetime_list

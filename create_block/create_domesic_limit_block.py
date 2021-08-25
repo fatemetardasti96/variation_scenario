@@ -13,7 +13,8 @@ def create_domestic_limit_bloc(inp, domestic_limit):
         value = 1000*value/3.6
         start_date = '{}-01-01_00:00'.format(year)
         value_row.extend([start_date, value])
-    value_row.extend(["2051-01-01_00:00", "0"])
+    if year != 2050 or year!='2050':
+        value_row.extend(["2050-01-01_00:00", value])
     limit_csv.append(value_row)
 
     limit_csv.append(['#endtable'])

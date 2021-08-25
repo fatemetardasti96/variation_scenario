@@ -7,10 +7,16 @@ from find_parameters.demand_per_year_handler import handle_demand
 
 def find_demand_factor(regions_data, region, year):
     demand_dict =  handle_demand(regions_data, region)
-    demand_sum = sum(list(demand_dict.values()))
-    if not demand_sum :
+    total_demadn = 0
+    all_region_list = iterate_mapping(regions_data, "timeseries[? timeindex_start=='{}-01-01T00:00:00'].region".format(year))
+    for reg in all_region_list:
+        demand_dict_reg =  handle_demand(regions_data, reg)
+        total_demadn += demand_dict_reg[year]
+
+    if not demand_dict[year]:
+
         return 'dont include this region'
-    return demand_dict[year]/demand_sum
+    return demand_dict[year]/total_demadn
 
 
 

@@ -23,7 +23,7 @@ from create_csv_files.create_config_files import create_config_files
 from create_csv_files.create_global_co2 import *
 
 
-SCENARIO_ID = 53
+SCENARIO_ID = 55
 
 if __name__ == '__main__':
     if not Path('ID'+str(SCENARIO_ID)).is_dir():
@@ -32,7 +32,6 @@ if __name__ == '__main__':
     else:
         cwd = 'ID'+str(SCENARIO_ID)+'_'+datetime.now().strftime('%Y-%m-%d_%H-%M')
         Path(cwd).mkdir(parents= True)
-    # cwd = '.'
 
     if not os.path.exists('db'):
         os.makedirs('db')
@@ -75,19 +74,17 @@ if __name__ == '__main__':
     create_domestic_limit(regions_data, cwd)
     
     logging.info('start regions directory')
-    installation_dict_for_installation = create_region_dir(regions_data, cwd, True)
-    if not os.path.exists('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID)):
-        with open('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID), 'w') as f:
-            f.write(json.dumps(installation_dict_for_installation))
+    installation_dict_for_installation = create_region_dir(regions_data, cwd, False, True)
+    # if not os.path.exists('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID)):
+    #     with open('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID), 'w') as f:
+    #         f.write(json.dumps(installation_dict_for_installation))
 
     
 
     logging.info('start installation directory')
     with open('db/installation_dict_for_installation_{}.txt'.format(SCENARIO_ID), 'r') as f:
         installation_dict_for_installation = json.loads(f.read())
-    create_installation_list(regions_data, concrete_data, installation_dict_for_installation, cwd)
+    create_installation_list(regions_data, concrete_data, cwd)
     
     create_global_co2(regions_data, cwd)
     create_global(cwd)
-
-    

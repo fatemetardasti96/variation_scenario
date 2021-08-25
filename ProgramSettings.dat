@@ -18,3 +18,5 @@ penalty_SQ_lower_limit=0
 penalty_SQ_upper_limit=0
 grid_exchange_ratio=1
 use_global_file = yes
+cma_writeResult_after_niter = 250
+analysis_hsm_output_debug=yes

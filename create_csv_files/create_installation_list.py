@@ -22,6 +22,14 @@ def is_capacity_smaller_than_expansion(installed_capacity, expansion_limit):
     return False
 
 
+def installation_list_result(cwd):
+        csv_list = []
+        csv_list.append(["#comment","MOUNTING-CODE.TECH-CODE;DATA-TYPE;DATA(may contain placeholders varxy);(if applicable) next lines:;#varxy;INIT-POINT;lBOUND;uBOUND;"])
+        csv_list.append(["#empty"])
+        filename = cwd+'/InstallationListResult.csv'
+        seperator_to_csv(csv_list, filename)
+
+
 def create_installation_list(regions_data, concrete_data, cwd):
     dirname = cwd + '/installation_lists/'
     Path(dirname).mkdir(exist_ok=True, parents=True)
@@ -142,3 +150,5 @@ def create_installation_list(regions_data, concrete_data, cwd):
             installationList_csv.append(['/include({})'.format(installation_list_path)])
 
     seperator_to_csv(installationList_csv, cwd+'/InstallationList.csv')
+    
+    installation_list_result(cwd)

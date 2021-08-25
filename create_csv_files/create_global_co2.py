@@ -9,8 +9,11 @@ def create_global_co2(regions_data, cwd):
     all_years = [e["year"] for e in emission_limit]
     if 2016 not in all_years:
         emission_limit.append({"year": 2016, "value": 1E9})
-    if 2020 not in all_years:
-        emission_limit.append({"year": 2020, "value": 1E9})
+    # if 2020 not in all_years:
+    #     emission_limit.append({"year": 2020, "value": 1E9})
+    
+    emission_limit = sorted([dict(t) for t in {tuple(d.items()) for d in emission_limit}], key=lambda k: k['year']) 
+
     global_csv = []
     global_csv.append(["#comment", "unlimited -1 primary resource"])
     base_row = ["base", "#type", "DVP_linear", "#data"]

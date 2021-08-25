@@ -23,7 +23,7 @@ class MultiConverter(Enum):
 def create_demand_electric_dyn_block(region, region_csv):
     region_csv.append(["#code", region, "#name", region])
     type_dyn = "TS_repeat_const"
-    start_date = "2015-01-01_00:00"
+    start_date = "2016-01-01_00:00"
     
     source_path = "./TimeSeries/" + region + "/demand_elec.csv"
     region_csv.append(["demand_electric_dyn", "#type", type_dyn, "#interval", "1h", "#start", start_date, "#data_source_path", source_path])
@@ -126,100 +126,9 @@ def region_storage_block(code, installed_capacity_dict, region_csv):
 
 
 
-def handle_incerasing_capacity(installed_capacity_dict, lifetime):
-    capacity_dict = {}
-    flag_2030 = 0
-    flag_2040 = 0
-
-    extra_capacity_2020 = installed_capacity_dict[2020] - installed_capacity_dict[2016]
-    if extra_capacity_2020<0:
-        capacity_dict[2016-int(lifetime)+1] = -extra_capacity_2020/4
-        first_installation_year = 2016
-        first_installation = -extra_capacity_2020/4
-    elif extra_capacity_2020>0:
-        capacity_dict[2020] = extra_capacity_2020
-        first_installation_year = 2020
-        first_installation = extra_capacity_2020
-
-    extra_capacity_2030 = installed_capacity_dict[2030] - installed_capacity_dict[2020]
-    if extra_capacity_2030<0:
-        if 2030-int(lifetime)+1 < first_installation_year and first_installation>0:
-            capacity_dict[2030-int(lifetime)+1] = -extra_capacity_2030/10 - first_installation
-        else:      
-            capacity_dict[2030-int(lifetime)+1] = -extra_capacity_2030/10
-        flag_2030 = 1
-    elif extra_capacity_2030>0:
-        if 2030-int(lifetime)+1 < first_installation_year and first_installation>0:
-            capacity_dict[2030-int(lifetime)+1] = extra_capacity_2030 - first_installation
-        else:      
-            capacity_dict[2030] = extra_capacity_2030
-    extra_capacity_2040 = installed_capacity_dict[2040] - installed_capacity_dict[2030]
-    if extra_capacity_2040<0:
-        flag_2040 = 1
-        if 2040-int(lifetime)+1 < first_installation_year and first_installation>0:
-            capacity_dict[2040-int(lifetime)+1] = -extra_capacity_2040/10 - first_installation
-        else:      
-            capacity_dict[2040-int(lifetime)+1] = -extra_capacity_2040/10
-
-        if 2040-int(lifetime)+1 < first_installation_year and extra_capacity_2030>0:
-            capacity_dict[2040-int(lifetime)+1] = -extra_capacity_2040/10 - extra_capacity_2030
-        else:      
-            capacity_dict[2040-int(lifetime)+1] = -extra_capacity_2040/10
-
-
-    elif extra_capacity_2040>0:
-        if 2040-int(lifetime)+1 < first_installation_year and extra_capacity_2020>0:
-            capacity_dict[2040-int(lifetime)+1] = extra_capacity_2040 - extra_capacity_2020
-        else:      
-            capacity_dict[2040] = extra_capacity_2040
-
-        if 2040-int(lifetime)+1 < 2030 and extra_capacity_2030>0:
-            capacity_dict[2040-int(lifetime)+1] = extra_capacity_2040 - extra_capacity_2030
-        else:      
-            capacity_dict[2040-int(lifetime)+1] = extra_capacity_2040
-
-    
-    first_end_of_life = 2020+int(lifetime) 
-    while first_end_of_life < 2050:
-        capacity_dict[first_end_of_life+1] = extra_capacity_2020
-        first_end_of_life += int(lifetime)
-
-    second_end_of_life = 2030+int(lifetime) 
-    while second_end_of_life < 2050:
-        capacity_dict[second_end_of_life+1] = extra_capacity_2030
-        second_end_of_life += int(lifetime)
-    
-    if 2050 not in installed_capacity_dict:
-        installed_capacity_dict[2050] = 0
-
-    if installed_capacity_dict[2050] - abs(extra_capacity_2020) - abs(extra_capacity_2030) > 0:
-        capacity_dict[2050-int(lifetime)+1] = installed_capacity_dict[2050] - extra_capacity_2020 - extra_capacity_2030
-
-    if (2050-int(lifetime)+1 > 2016) and (installed_capacity_dict[2050] - abs(extra_capacity_2020) - abs(extra_capacity_2030))>0:
-        capacity_dict[2050-int(lifetime)+1-int(lifetime)+1] = installed_capacity_dict[2050] - extra_capacity_2020 - extra_capacity_2030
-
-
-    sorted_capacitydict = {k:v for k,v in sorted(capacity_dict.items())}
-    all_years = list(sorted_capacitydict.keys())
-    if flag_2030:
-        next_year_idx = [i+1 for i in range(len(all_years)) if all_years[i]==2030-int(lifetime)+1][0]
-        for year in range(2030-int(lifetime)+1, all_years[next_year_idx]):
-            capacity_dict[year] = capacity_dict[2030-int(lifetime)+1]
-
-    if flag_2040:
-        next_year_idx = [i+1 for i in range(len(all_years)) if all_years[i]==2040-int(lifetime)+1][0]
-        for year in range(2040-int(lifetime)+1, all_years[next_year_idx]):
-            capacity_dict[year] = capacity_dict[2040-int(lifetime)+1]
-
-    sorted_capacitydict = {k:v for k,v in sorted(capacity_dict.items())}
-
-    return sorted_capacitydict
-
-
-
 def apply_diff(installed_capacity_dict, tech_type, lifetime):
     if tech_type == TechnologyType.TRADE_IMPORT:
-        return {2016: max(list(installed_capacity_dict.values()))/1000.0}
+        return {2015: max(list(installed_capacity_dict.values()))/1000.0}
 
     available_capacity_years = list(installed_capacity_dict.keys())
     starting_year = available_capacity_years[0]
@@ -276,7 +185,7 @@ def create_installation_dict(regions_data, installation_elements, region, avoid_
                 lifetime = 0
             if tech == 'transmission' and tech_type == 'hvac':
                 continue
-            # installed_capacity_dict[2060] = 0
+            installed_capacity_dict[2050] = 0
             installation_diff = apply_diff(installed_capacity_dict, tech_type, lifetime)
             installation_list.append({'input_energy': input_energy, 'tech_type': tech_type, 'tech': tech, 'value': installation_diff})    
         else:
@@ -333,3 +242,23 @@ def handle_transfer_capacity_from_region_to_installation(installation_list):
         if len(installation_value):
             installation_list_for_installation.append({'input_energy': elem['input_energy'], 'tech_type':elem['tech_type'], 'tech': elem['tech'], 'value':installation_value})
     return installation_list_for_region, installation_list_for_installation
+
+
+
+def handle_accumulate_region_for_years_bigger_than_2016(installation_list):
+    installation_list_for_region = []
+    for elem in installation_list:
+        installation_diff = elem['value']
+        accum_val = 0
+        accum_capacity = {}
+        for year in installation_diff:
+            if year>=2015:
+                accum_val += installation_diff[year]
+            else:
+                accum_capacity[year] = installation_diff[year]
+        if accum_val:
+            accum_capacity[2015] = accum_val
+
+        installation_list_for_region.append({'input_energy': elem['input_energy'], 'tech_type':elem['tech_type'], 'tech': elem['tech'], 'value':accum_capacity})
+
+    return installation_list_for_region

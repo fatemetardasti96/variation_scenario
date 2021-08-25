@@ -37,7 +37,7 @@ def create_multiconverter(regions_data, cwd):
                 output_energy = iterate_mapping(grouped,"unique(\"{}\"[*].output_energy_vector)".format(elem))
                 output_energy = [OutputEnergy.ELECTRIC_ENERGY if i == OutputEnergy.ELECTRICITY else i for i in output_energy]
                 
-                efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'efficiency', 2016, 1)
+                efficiency_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'output ratio', 2016, 1)
                 efficiency_list = [{"year": 1900, "value": efficiency_list[0]["value"]}] + efficiency_list
                 lifetime_list = find_parameter_year_value(regions_data, technology, technology_type, inp_energy, 'lifetime', 2016, 0)
                 lifetime_list = [{"year": 1900, "value": lifetime_list[0]["value"]}] + lifetime_list
